@@ -1,1 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Dashboard</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #0dcaf0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --bg-dark: #1a1a2e;
+            --bg-darker: #0f0f1e;
+            --card-bg: #262641;
+            --border-color: #3a3a4e;
+            --text-light: #e0e0e0;
+        }
+        
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        body {
+            background-color: var(--bg-darker);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background-color: var(--card-bg) !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--info) !important;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-light);
+        }
+        
+        .card-header {
+            background-color: rgba(13, 110, 253, 0.1);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--info);
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #157347;
+            border-color: #157347;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+        }
+        
+        .form-control, .form-select {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            color: var(--text-light);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .form-control::placeholder {
+            color: rgba(224, 224, 224, 0.5);
+        }
+        
+        .table {
+            color: var(--text-light);
+        }
+        
+        .table thead {
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(13, 110, 253, 0.1);
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.05) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .summary-card h6 {
+            color: rgba(224, 224, 224, 0.7);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-card .value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--info);
+        }
+        
+        .summary-card .change {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        .positive {
+            color: var(--success);
+        }
+        
+        .negative {
+            color: var(--danger);
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.65rem;
+            font-weight: 600;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(13, 110, 253, 0.1);
+        }
+        
+        .modal-body {
+            color: var(--text-light);
+        }
+        
+        .btn-close {
+            filter: invert(1);
+        }
+        
+        .spinner-border {
+            border-color: var(--border-color);
+            border-right-color: var(--info);
+        }
+        
+        .tab-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            padding: 1.5rem;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--text-light);
+            border-bottom: 2px solid transparent;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            border-bottom-color: var(--primary);
+            color: var(--info);
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--card-bg);
+            border-bottom-color: var(--info);
+            color: var(--info);
+        }
+        
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .sortable:hover {
+            color: var(--info);
+        }
+        
+        .sort-indicator {
+            margin-left: 5px;
+            font-size: 0.75rem;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(224, 224, 224, 0.5);
+            pointer-events: none;
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .alert-success {
+            background-color: rgba(25, 135, 84, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+        
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        
+        .alert-info {
+            background-color: rgba(13, 202, 240, 0.1);
+            border-color: var(--info);
+            color: var(--info);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+        
+        .footer {
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            color: rgba(224, 224, 224, 0.6);
+            font-size: 0.875rem;
+        }
+        
+        .btn-sm {
+            padding: 0.35rem 0.65rem;
+            font-size: 0.8rem;
+        }
+        
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .dropdown-item {
+            color: var(--text-light);
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: var(--info);
+        }
+        
+        .dropdown-divider {
+            border-color: var(--border-color);
+        }
+        
+        @media (max-width: 768px) {
+            .summary-card .value {
+                font-size: 1.25rem;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-pie"></i> Portfolio Dashboard
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button class="nav-link btn btn-sm" id="exportBtn" data-bs-toggle="tooltip" title="Export portfolio to CSV">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link btn btn-sm" id="importBtn" data-bs-toggle="tooltip" title="Import portfolio from CSV">
+                            <i class="fas fa-upload"></i> Import
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link btn btn-sm" id="resetBtn" data-bs-toggle="tooltip" title="Reset to default portfolio">
+                            <i class="fas fa-refresh"></i> Reset
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Main Container -->
+    <div class="container-fluid py-4">
+        <!-- Alerts -->
+        <div id="alertContainer"></div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="summary-card">
+                    <h6><i class="fas fa-wallet"></i> Total Value</h6>
+                    <div class="value" id="totalValue">$0.00</div>
+                    <div class="change">
+                        <span id="totalGain"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="summary-card">
+                    <h6><i class="fas fa-coins"></i> Total Invested</h6>
+                    <div class="value" id="totalInvested">$0.00</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="summary-card">
+                    <h6><i class="fas fa-percent"></i> Return %</h6>
+                    <div class="value" id="returnPercent">0%</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="summary-card">
+                    <h6><i class="fas fa-chart-line"></i> Holdings</h6>
+                    <div class="value" id="holdingsCount">0</div>
+                    <div class="change">stocks</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Tabs -->
+        <div class="card">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="holdings-tab" data-bs-toggle="tab" data-bs-target="#holdings-content" type="button">
+                        <i class="fas fa-list"></i> Holdings
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="trade-tab" data-bs-toggle="tab" data-bs-target="#trade-content" type="button">
+                        <i class="fas fa-exchange-alt"></i> Trade
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="charts-tab" data-bs-toggle="tab" data-bs-target="#charts-content" type="button">
+                        <i class="fas fa-chart-bar"></i> Charts
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings-content" type="button">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="tabs-content">
+                <!-- Holdings Tab -->
+                <div class="tab-pane fade show active" id="holdings-content" role="tabpanel">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="search-box">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Search holdings...">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <select id="filterSymbol" class="form-select">
+                                <option value="">All Holdings</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="holdingsTable">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="symbol">Symbol <span class="sort-indicator"></span></th>
+                                    <th class="sortable" data-sort="shares">Shares <span class="sort-indicator"></span></th>
+                                    <th class="sortable" data-sort="avgCost">Avg Cost <span class="sort-indicator"></span></th>
+                                    <th class="sortable" data-sort="currentPrice">Current Price <span class="sort-indicator"></span></th>
+                                    <th class="sortable" data-sort="totalCost">Total Cost <span class="sort-indicator"></span></th>
+                                    <th class="sortable" data-sort="currentValue">Current Value <span class="sort-indicator"></span></th>
+                                    <th class="sortable" data-sort="gainLoss">Gain/Loss <span class="sort-indicator"></span></th>
+                                    <th class="sortable" data-sort="allocation">Allocation % <span class="sort-indicator"></span></th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="holdingsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Trade Tab -->
+                <div class="tab-pane fade" id="trade-content" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-plus"></i> Buy Stock
+                                </div>
+                                <div class="card-body">
+                                    <form id="buyForm">
+                                        <div class="mb-3">
+                                            <label for="buySymbol" class="form-label">Stock Symbol</label>
+                                            <input type="text" class="form-control" id="buySymbol" placeholder="e.g., AAPL" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="buyShares" class="form-label">Number of Shares</label>
+                                            <input type="number" class="form-control" id="buyShares" placeholder="e.g., 10" min="0.01" step="0.01" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="buyPrice" class="form-label">Price per Share</label>
+                                            <input type="number" class="form-control" id="buyPrice" placeholder="e.g., 150.00" min="0" step="0.01" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="buyDate" class="form-label">Purchase Date</label>
+                                            <input type="date" class="form-control" id="buyDate" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="fas fa-cart-plus"></i> Buy
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-minus"></i> Sell Stock
+                                </div>
+                                <div class="card-body">
+                                    <form id="sellForm">
+                                        <div class="mb-3">
+                                            <label for="sellSymbol" class="form-label">Stock Symbol</label>
+                                            <select class="form-select" id="sellSymbol" required>
+                                                <option value="">Select a stock...</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="sellShares" class="form-label">Number of Shares</label>
+                                            <input type="number" class="form-control" id="sellShares" placeholder="e.g., 5" min="0.01" step="0.01" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="sellPrice" class="form-label">Price per Share</label>
+                                            <input type="number" class="form-control" id="sellPrice" placeholder="e.g., 155.00" min="0" step="0.01" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="sellDate" class="form-label">Sale Date</label>
+                                            <input type="date" class="form-control" id="sellDate" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-danger w-100">
+                                            <i class="fas fa-cart-minus"></i> Sell
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Tab -->
+                <div class="tab-pane fade" id="charts-content" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-pie-chart"></i> Allocation
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="allocationChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-line"></i> Performance
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="performanceChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-pane fade" id="settings-content" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <h5 class="mb-3">Portfolio Settings</h5>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Your portfolio data is automatically saved to your browser's local storage.
+                            </div>
+                            <div class="mb-3">
+                                <h6>Data Management</h6>
+                                <p class="text-muted">Total Holdings: <strong id="totalHoldings">0</strong> stocks</p>
+                            </div>
+                            <div class="mb-3">
+                                <button class="btn btn-warning" id="exportSettingsBtn">
+                                    <i class="fas fa-download"></i> Export Portfolio (CSV)
+                                </button>
+                                <button class="btn btn-info" id="importSettingsBtn">
+                                    <i class="fas fa-upload"></i> Import Portfolio (CSV)
+                                </button>
+                                <input type="file" id="csvFile" style="display: none;" accept=".csv">
+                            </div>
+                            <div class="mb-3">
+                                <button class="btn btn-outline-danger" id="clearDataBtn">
+                                    <i class="fas fa-trash"></i> Clear All Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="text-center">
+                <p>Portfolio Dashboard © 2024 | Data saved locally | No internet required after load</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Holding</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="editIndex">
+                        <div class="mb-3">
+                            <label for="editSymbol" class="form-label">Symbol</label>
+                            <input type="text" class="form-control" id="editSymbol" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editShares" class="form-label">Shares</label>
+                            <input type="number" class="form-control" id="editShares" min="0.01" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAvgCost" class="form-label">Avg Cost per Share</label>
+                            <input type="number" class="form-control" id="editAvgCost" min="0" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCurrentPrice" class="form-label">Current Price</label>
+                            <input type="number" class="form-control" id="editCurrentPrice" min="0" step="0.01" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ============ Portfolio Application ============
+        
+        class PortfolioApp {
+            constructor() {
+                this.holdings = [];
+                this.trades = [];
+                this.currentSort = { field: 'symbol', direction: 'asc' };
+                this.charts = {};
+                this.init();
+            }
+
+            init() {
+                this.loadFromStorage();
+                if (this.holdings.length === 0) {
+                    this.loadDefaultPortfolio();
+                }
+                this.setupEventListeners();
+                this.render();
+                this.initCharts();
+                this.setDefaultDates();
+            }
+
+            // ============ Default Portfolio (29 stocks) ============
+            loadDefaultPortfolio() {
+                const defaultHoldings = [
+                    { symbol: 'AAPL', shares: 50, avgCost: 145.32, currentPrice: 185.45 },
+                    { symbol: 'MSFT', shares: 35, avgCost: 320.15, currentPrice: 425.67 },
+                    { symbol: 'GOOGL', shares: 20, avgCost: 2450.00, currentPrice: 2865.30 },
+                    { symbol: 'AMZN', shares: 25, avgCost: 3210.45, currentPrice: 3580.90 },
+                    { symbol: 'NVDA', shares: 40, avgCost: 245.67, currentPrice: 875.32 },
+                    { symbol: 'META', shares: 30, avgCost: 285.20, currentPrice: 495.15 },
+                    { symbol: 'TESLA', shares: 15, avgCost: 875.45, currentPrice: 245.67 },
+                    { symbol: 'BRKA', shares: 8, avgCost: 520000, currentPrice: 625000 },
+                    { symbol: 'JNJ', shares: 45, avgCost: 155.30, currentPrice: 162.45 },
+                    { symbol: 'V', shares: 35, avgCost: 250.15, currentPrice: 295.80 },
+                    { symbol: 'WMT', shares: 40, avgCost: 145.20, currentPrice: 165.45 },
+                    { symbol: 'JPM', shares: 50, avgCost: 185.30, currentPrice: 215.75 },
+                    { symbol: 'MA', shares: 25, avgCost: 420.15, currentPrice: 480.90 },
+                    { symbol: 'UNH', shares: 20, avgCost: 485.20, currentPrice: 525.60 },
+                    { symbol: 'XOM', shares: 60, avgCost: 102.45, currentPrice: 118.75 },
+                    { symbol: 'CVX', shares: 35, avgCost: 165.30, currentPrice: 182.10 },
+                    { symbol: 'KO', shares: 80, avgCost: 58.20, currentPrice: 62.45 },
+                    { symbol: 'PEP', shares: 45, avgCost: 178.90, currentPrice: 195.30 },
+                    { symbol: 'MCD', shares: 30, avgCost: 285.45, currentPrice: 295.60 },
+                    { symbol: 'CSCO', shares: 100, avgCost: 47.30, currentPrice: 52.80 },
+                    { symbol: 'IBM', shares: 40, avgCost: 145.60, currentPrice: 155.20 },
+                    { symbol: 'INTC', shares: 70, avgCost: 42.15, currentPrice: 38.90 },
+                    { symbol: 'AMD', shares: 50, avgCost: 115.30, currentPrice: 142.75 },
+                    { symbol: 'QCOM', shares: 30, avgCost: 165.20, currentPrice: 175.45 },
+                    { symbol: 'ADBE', shares: 25, avgCost: 420.15, currentPrice: 495.80 },
+                    { symbol: 'CRM', shares: 20, avgCost: 285.60, currentPrice: 315.20 },
+                    { symbol: 'ORCL', shares: 35, avgCost: 128.45, currentPrice: 142.30 },
+                    { symbol: 'NFLX', shares: 15, avgCost: 385.20, currentPrice: 425.60 },
+                    { symbol: 'TSLA', shares: 10, avgCost: 245.30, currentPrice: 265.45 }
+                ];
+
+                this.holdings = defaultHoldings.map(h => ({
+                    ...h,
+                    purchaseDate: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                }));
+
+                this.saveToStorage();
+            }
+
+            // ============ Data Persistence ============
+            loadFromStorage() {
+                const stored = localStorage.getItem('portfolioData');
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        this.holdings = data.holdings || [];
+                        this.trades = data.trades || [];
+                    } catch (e) {
+                        console.error('Error loading data:', e);
+                    }
+                }
+            }
+
+            saveToStorage() {
+                localStorage.setItem('portfolioData', JSON.stringify({
+                    holdings: this.holdings,
+                    trades: this.trades
+                }));
+            }
+
+            // ============ Trade Logic ============
+            buyStock(symbol, shares, price, date) {
+                const holding = this.holdings.find(h => h.symbol === symbol.toUpperCase());
+                
+                if (holding) {
+                    const totalCost = holding.shares * holding.avgCost;
+                    const newCost = shares * price;
+                    const totalShares = holding.shares + shares;
+                    holding.avgCost = (totalCost + newCost) / totalShares;
+                    holding.shares = totalShares;
+                    holding.currentPrice = price;
+                    holding.purchaseDate = date;
+                } else {
+                    this.holdings.push({
+                        symbol: symbol.toUpperCase(),
+                        shares: shares,
+                        avgCost: price,
+                        currentPrice: price,
+                        purchaseDate: date
+                    });
+                }
+
+                this.trades.push({
+                    type: 'BUY',
+                    symbol: symbol.toUpperCase(),
+                    shares: shares,
+                    price: price,
+                    date: date,
+                    timestamp: new Date().toISOString()
+                });
+
+                this.saveToStorage();
+                this.render();
+                this.showAlert('success', `Bought ${shares} shares of ${symbol.toUpperCase()}`);
+            }
+
+            sellStock(symbol, shares, price, date) {
+                const holding = this.holdings.find(h => h.symbol === symbol.toUpperCase());
+                
+                if (!holding) {
+                    this.showAlert('danger', `No holding found for ${symbol.toUpperCase()}`);
+                    return;
+                }
+
+                if (holding.shares < shares) {
+                    this.showAlert('danger', `Not enough shares. You have ${holding.shares} shares.`);
+                    return;
+                }
+
+                holding.shares -= shares;
+                holding.currentPrice = price;
+
+                if (holding.shares === 0) {
+                    this.holdings = this.holdings.filter(h => h.symbol !== symbol);
+                }
+
+                this.trades.push({
+                    type: 'SELL',
+                    symbol: symbol.toUpperCase(),
+                    shares: shares,
+                    price: price,
+                    date: date,
+                    timestamp: new Date().toISOString()
+                });
+
+                this.saveToStorage();
+                this.render();
+                this.showAlert('success', `Sold ${shares} shares of ${symbol.toUpperCase()}`);
+            }
+
+            // ============ Calculations ============
+            getTotalValue() {
+                return this.holdings.reduce((sum, h) => sum + (h.shares * h.currentPrice), 0);
+            }
+
+            getTotalCost() {
+                return this.holdings.reduce((sum, h) => sum + (h.shares * h.avgCost), 0);
+            }
+
+            getTotalGain() {
+                return this.getTotalValue() - this.getTotalCost();
+            }
+
+            getReturnPercent() {
+                const cost = this.getTotalCost();
+                return cost === 0 ? 0 : ((this.getTotalGain() / cost) * 100);
+            }
+
+            getAllocation(holding) {
+                const total = this.getTotalValue();
+                return total === 0 ? 0 : ((holding.shares * holding.currentPrice) / total) * 100;
+            }
+
+            getHoldingGain(holding) {
+                return (holding.shares * holding.currentPrice) - (holding.shares * holding.avgCost);
+            }
+
+            getHoldingGainPercent(holding) {
+                const cost = holding.shares * holding.avgCost;
+                return cost === 0 ? 0 : ((this.getHoldingGain(holding) / cost) * 100);
+            }
+
+            // ============ Rendering ============
+            render() {
+                this.updateSummary();
+                this.updateTable();
+                this.updateCharts();
+                this.updateSelects();
+            }
+
+            updateSummary() {
+                const totalValue = this.getTotalValue();
+                const totalCost = this.getTotalCost();
+                const totalGain = this.getTotalGain();
+                const returnPercent = this.getReturnPercent();
+
+                document.getElementById('totalValue').textContent = this.formatCurrency(totalValue);
+                
+                const gainElement = document.getElementById('totalGain');
+                gainElement.textContent = `${this.formatCurrency(totalGain)} (${returnPercent.toFixed(2)}%)`;
+                gainElement.className = 'change ' + (totalGain >= 0 ? 'positive' : 'negative');
+
+                document.getElementById('totalInvested').textContent = this.formatCurrency(totalCost);
+                document.getElementById('returnPercent').textContent = `${returnPercent.toFixed(2)}%`;
+                document.getElementById('returnPercent').className = 'value ' + (returnPercent >= 0 ? 'positive' : 'negative');
+                document.getElementById('holdingsCount').textContent = this.holdings.length;
+                document.getElementById('totalHoldings').textContent = this.holdings.length;
+            }
+
+            updateTable() {
+                const tbody = document.getElementById('holdingsTableBody');
+                tbody.innerHTML = '';
+
+                let filtered = this.holdings;
+                const search = document.getElementById('searchInput').value.toLowerCase();
+                const filterSymbol = document.getElementById('filterSymbol').value;
+
+                filtered = filtered.filter(h => 
+                    h.symbol.toLowerCase().includes(search)
+                );
+
+                if (filterSymbol) {
+                    filtered = filtered.filter(h => h.symbol === filterSymbol);
+                }
+
+                filtered.sort((a, b) => {
+                    const field = this.currentSort.field;
+                    let aVal = a[field];
+                    let bVal = b[field];
+
+                    if (field === 'gainLoss') {
+                        aVal = this.getHoldingGain(a);
+                        bVal = this.getHoldingGain(b);
+                    } else if (field === 'allocation') {
+                        aVal = this.getAllocation(a);
+                        bVal = this.getAllocation(b);
+                    }
+
+                    if (typeof aVal === 'string') {
+                        aVal = aVal.toLowerCase();
+                        bVal = bVal.toLowerCase();
+                    }
+
+                    if (this.currentSort.direction === 'asc') {
+                        return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+                    } else {
+                        return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+                    }
+                });
+
+                filtered.forEach((holding, idx) => {
+                    const actualIdx = this.holdings.indexOf(holding);
+                    const totalCost = holding.shares * holding.avgCost;
+                    const currentValue = holding.shares * holding.currentPrice;
+                    const gain = this.getHoldingGain(holding);
+                    const gainPercent = this.getHoldingGainPercent(holding);
+                    const allocation = this.getAllocation(holding);
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${holding.symbol}</strong></td>
+                        <td>${holding.shares.toFixed(2)}</td>
+                        <td>${this.formatCurrency(holding.avgCost)}</td>
+                        <td>${this.formatCurrency(holding.currentPrice)}</td>
+                        <td>${this.formatCurrency(totalCost)}</td>
+                        <td>${this.formatCurrency(currentValue)}</td>
+                        <td><span class="${gain >= 0 ? 'positive' : 'negative'}">${this.formatCurrency(gain)} (${gainPercent.toFixed(2)}%)</span></td>
+                        <td><span class="badge bg-info">${allocation.toFixed(2)}%</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="app.openEditModal(${actualIdx})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="app.deleteHolding(${actualIdx})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            updateCharts() {
+                this.updateAllocationChart();
+                this.updatePerformanceChart();
+            }
+
+            updateAllocationChart() {
+                const ctx = document.getElementById('allocationChart').getContext('2d');
+                const labels = this.holdings.map(h => h.symbol);
+                const values = this.holdings.map(h => h.shares * h.currentPrice);
+                const colors = this.generateColors(this.holdings.length);
+
+                if (this.charts.allocation) {
+                    this.charts.allocation.destroy();
+                }
+
+                this.charts.allocation = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: colors,
+                            borderColor: '#262641',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    color: '#e0e0e0',
+                                    padding: 15,
+                                    font: { size: 11 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            updatePerformanceChart() {
+                const ctx = document.getElementById('performanceChart').getContext('2d');
+                const labels = this.holdings.map(h => h.symbol);
+                const gains = this.holdings.map(h => this.getHoldingGainPercent(h));
+                const colors = gains.map(g => g >= 0 ? '#198754' : '#dc3545');
+
+                if (this.charts.performance) {
+                    this.charts.performance.destroy();
+                }
+
+                this.charts.performance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Gain/Loss %',
+                            data: gains,
+                            backgroundColor: colors,
+                            borderColor: '#262641',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#e0e0e0' }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#e0e0e0' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            y: {
+                                ticks: { color: '#e0e0e0' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            updateSelects() {
+                const symbols = this.holdings.map(h => h.symbol).sort();
+                
+                // Update filter select
+                const filterSelect = document.getElementById('filterSymbol');
+                const currentFilter = filterSelect.value;
+                filterSelect.innerHTML = '<option value="">All Holdings</option>';
+                symbols.forEach(symbol => {
+                    const option = document.createElement('option');
+                    option.value = symbol;
+                    option.textContent = symbol;
+                    filterSelect.appendChild(option);
+                });
+                filterSelect.value = currentFilter;
+
+                // Update sell select
+                const sellSelect = document.getElementById('sellSymbol');
+                const currentSell = sellSelect.value;
+                sellSelect.innerHTML = '<option value="">Select a stock...</option>';
+                symbols.forEach(symbol => {
+                    const option = document.createElement('option');
+                    option.value = symbol;
+                    option.textContent = symbol;
+                    sellSelect.appendChild(option);
+                });
+                sellSelect.value = currentSell;
+            }
+
+            initCharts() {
+                this.updateAllocationChart();
+                this.updatePerformanceChart();
+            }
+
+            // ============ UI Interactions ============
+            setupEventListeners() {
+                // Buy form
+                document.getElementById('buyForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const symbol = document.getElementById('buySymbol').value;
+                    const shares = parseFloat(document.getElementById('buyShares').value);
+                    const price = parseFloat(document.getElementById('buyPrice').value);
+                    const date = document.getElementById('buyDate').value;
+
+                    this.buyStock(symbol, shares, price, date);
+                    e.target.reset();
+                    this.setDefaultDates();
+                });
+
+                // Sell form
+                document.getElementById('sellForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const symbol = document.getElementById('sellSymbol').value;
+                    const shares = parseFloat(document.getElementById('sellShares').value);
+                    const price = parseFloat(document.getElementById('sellPrice').value);
+                    const date = document.getElementById('sellDate').value;
+
+                    this.sellStock(symbol, shares, price, date);
+                    e.target.reset();
+                    this.setDefaultDates();
+                });
+
+                // Search and filter
+                document.getElementById('searchInput').addEventListener('input', () => {
+                    this.updateTable();
+                });
+
+                document.getElementById('filterSymbol').addEventListener('change', () => {
+                    this.updateTable();
+                });
+
+                // Sort
+                document.querySelectorAll('.sortable').forEach(header => {
+                    header.addEventListener('click', (e) => {
+                        const field = e.target.closest('.sortable').dataset.sort;
+                        if (this.currentSort.field === field) {
+                            this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            this.currentSort.field = field;
+                            this.currentSort.direction = 'asc';
+                        }
+                        this.updateTable();
+                        this.updateSortIndicators();
+                    });
+                });
+
+                // Edit modal
+                document.getElementById('saveEditBtn').addEventListener('click', () => {
+                    const idx = parseInt(document.getElementById('editIndex').value);
+                    const shares = parseFloat(document.getElementById('editShares').value);
+                    const avgCost = parseFloat(document.getElementById('editAvgCost').value);
+                    const currentPrice = parseFloat(document.getElementById('editCurrentPrice').value);
+
+                    this.holdings[idx].shares = shares;
+                    this.holdings[idx].avgCost = avgCost;
+                    this.holdings[idx].currentPrice = currentPrice;
+
+                    this.saveToStorage();
+                    this.render();
+                    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                    this.showAlert('success', 'Holding updated successfully');
+                });
+
+                // Export/Import
+                document.getElementById('exportBtn').addEventListener('click', () => this.exportCSV());
+                document.getElementById('importBtn').addEventListener('click', () => {
+                    document.getElementById('csvFile').click();
+                });
+
+                document.getElementById('csvFile').addEventListener('change', (e) => {
+                    this.importCSV(e.target.files[0]);
+                });
+
+                document.getElementById('exportSettingsBtn').addEventListener('click', () => this.exportCSV());
+                document.getElementById('importSettingsBtn').addEventListener('click', () => {
+                    document.getElementById('csvFile').click();
+                });
+
+                document.getElementById('clearDataBtn').addEventListener('click', () => {
+                    if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                        this.holdings = [];
+                        this.trades = [];
+                        this.saveToStorage();
+                        this.render();
+                        this.showAlert('warning', 'All data cleared');
+                    }
+                });
+
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    if (confirm('Reset to default 29-stock portfolio?')) {
+                        this.loadDefaultPortfolio();
+                        this.render();
+                        this.showAlert('success', 'Portfolio reset to default');
+                    }
+                });
+            }
+
+            // ============ Utilities ============
+            openEditModal(idx) {
+                const holding = this.holdings[idx];
+                document.getElementById('editIndex').value = idx;
+                document.getElementById('editSymbol').value = holding.symbol;
+                document.getElementById('editShares').value = holding.shares;
+                document.getElementById('editAvgCost').value = holding.avgCost;
+                document.getElementById('editCurrentPrice').value = holding.currentPrice;
+
+                new bootstrap.Modal(document.getElementById('editModal')).show();
+            }
+
+            deleteHolding(idx) {
+                if (confirm(`Delete ${this.holdings[idx].symbol}?`)) {
+                    this.holdings.splice(idx, 1);
+                    this.saveToStorage();
+                    this.render();
+                    this.showAlert('success', 'Holding deleted');
+                }
+            }
+
+            exportCSV() {
+                let csv = 'Symbol,Shares,Avg Cost,Current Price,Total Cost,Current Value,Gain/Loss,Allocation %,Purchase Date\n';
+                
+                this.holdings.forEach(h => {
+                    const totalCost = h.shares * h.avgCost;
+                    const currentValue = h.shares * h.currentPrice;
+                    const gain = currentValue - totalCost;
+                    const allocation = this.getAllocation(h);
+                    
+                    csv += `${h.symbol},${h.shares},${h.avgCost},${h.currentPrice},${totalCost},${currentValue},${gain},${allocation},${h.purchaseDate || ''}\n`;
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `portfolio_${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                this.showAlert('success', 'Portfolio exported');
+            }
+
+            importCSV(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const csv = e.target.result;
+                        const lines = csv.split('\n').filter(line => line.trim());
+                        
+                        if (lines.length < 2) {
+                            this.showAlert('danger', 'Invalid CSV format');
+                            return;
+                        }
+
+                        this.holdings = [];
+                        
+                        for (let i = 1; i < lines.length; i++) {
+                            const [symbol, shares, avgCost, currentPrice, , , , , purchaseDate] = lines[i].split(',');
+                            
+                            if (symbol && shares && avgCost && currentPrice) {
+                                this.holdings.push({
+                                    symbol: symbol.trim(),
+                                    shares: parseFloat(shares),
+                                    avgCost: parseFloat(avgCost),
+                                    currentPrice: parseFloat(currentPrice),
+                                    purchaseDate: purchaseDate ? purchaseDate.trim() : new Date().toISOString().split('T')[0]
+                                });
+                            }
+                        }
+
+                        this.saveToStorage();
+                        this.render();
+                        this.showAlert('success', `Imported ${this.holdings.length} holdings`);
+                    } catch (err) {
+                        this.showAlert('danger', 'Error importing CSV: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            setDefaultDates() {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('buyDate').valueAsDate = new Date();
+                document.getElementById('sellDate').valueAsDate = new Date();
+            }
+
+            updateSortIndicators() {
+                document.querySelectorAll('.sort-indicator').forEach(el => {
+                    el.textContent = '';
+                });
+
+                const activeHeader = document.querySelector(`[data-sort="${this.currentSort.field}"]`);
+                if (activeHeader) {
+                    const indicator = activeHeader.querySelector('.sort-indicator');
+                    indicator.textContent = this.currentSort.direction === 'asc' ? '▲' : '▼';
+                }
+            }
+
+            showAlert(type, message) {
+                const container = document.getElementById('alertContainer');
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                container.appendChild(alert);
+
+                setTimeout(() => {
+                    alert.remove();
+                }, 4000);
+            }
+
+            formatCurrency(value) {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                }).format(value);
+            }
+
+            generateColors(count) {
+                const colors = [
+                    '#0d6efd', '#198754', '#dc3545', '#ffc107', '#0dcaf0',
+                    '#d63384', '#fd7e14', '#6c757d', '#20c997', '#664d03',
+                    '#664d03', '#842029', '#f8f9fa', '#86181d', '#155724',
+                    '#856404', '#004085', '#721c24', '#0a3622', '#1f1d5d'
+                ];
+
+                const generated = [];
+                for (let i = 0; i < count; i++) {
+                    generated.push(colors[i % colors.length]);
+                }
+                return generated;
+            }
+        }
+
+        // Initialize app
+        const app = new PortfolioApp();
+
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', () => {
+            const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltips.forEach(el => new bootstrap.Tooltip(el));
+        });
+    </script>
+</body>
+</html>
