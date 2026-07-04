@@ -116,6 +116,10 @@
         
         .table thead {
             border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background-color: var(--card-bg);
+            z-index: 10;
         }
         
         .table tbody tr {
@@ -124,6 +128,14 @@
         
         .table tbody tr:hover {
             background-color: rgba(13, 110, 253, 0.1);
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .text-right {
+            text-align: right;
         }
         
         .summary-card {
@@ -165,6 +177,11 @@
             font-size: 0.75rem;
             padding: 0.35rem 0.65rem;
             font-weight: 600;
+        }
+        
+        .badge-allocation {
+            background-color: rgba(13, 110, 253, 0.3);
+            color: var(--info);
         }
         
         .modal-content {
@@ -327,6 +344,11 @@
             .chart-container {
                 height: 300px;
             }
+            
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
         }
     </style>
 </head>
@@ -369,32 +391,42 @@
 
         <!-- Summary Cards -->
         <div class="row mb-4">
-            <div class="col-lg-3 col-md-6 mb-3">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
                 <div class="summary-card">
-                    <h6><i class="fas fa-wallet"></i> Total Value</h6>
-                    <div class="value" id="totalValue">$0.00</div>
-                    <div class="change">
-                        <span id="totalGain"></span>
-                    </div>
+                    <h6><i class="fas fa-coins"></i> Invested</h6>
+                    <div class="value" id="investedValue">$0.00</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 mb-3">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
                 <div class="summary-card">
-                    <h6><i class="fas fa-coins"></i> Total Invested</h6>
-                    <div class="value" id="totalInvested">$0.00</div>
+                    <h6><i class="fas fa-wallet"></i> Current</h6>
+                    <div class="value" id="currentValue">$0.00</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 mb-3">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
                 <div class="summary-card">
-                    <h6><i class="fas fa-percent"></i> Return %</h6>
-                    <div class="value" id="returnPercent">0%</div>
+                    <h6><i class="fas fa-chart-line"></i> Unrealised P/L</h6>
+                    <div class="value" id="unrealisedPL">$0.00</div>
+                    <div class="change" id="unrealisedPLPercent"></div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 mb-3">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
                 <div class="summary-card">
-                    <h6><i class="fas fa-chart-line"></i> Holdings</h6>
+                    <h6><i class="fas fa-arrow-trend-up"></i> Net P/L</h6>
+                    <div class="value" id="netPL">$0.00</div>
+                    <div class="change" id="netPLPercent"></div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="summary-card">
+                    <h6><i class="fas fa-money-bill"></i> Cash</h6>
+                    <div class="value" id="cashValue">$0.00</div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="summary-card">
+                    <h6><i class="fas fa-chart-bar"></i> Holdings</h6>
                     <div class="value" id="holdingsCount">0</div>
-                    <div class="change">stocks</div>
                 </div>
             </div>
         </div>
@@ -428,31 +460,25 @@
                 <!-- Holdings Tab -->
                 <div class="tab-pane fade show active" id="holdings-content" role="tabpanel">
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="search-box">
-                                <input type="text" id="searchInput" class="form-control" placeholder="Search holdings...">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Search by ticker...">
                                 <i class="fas fa-search"></i>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <select id="filterSymbol" class="form-select">
-                                <option value="">All Holdings</option>
-                            </select>
                         </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th class="sortable" data-sort="symbol">Symbol <span class="sort-indicator"></span></th>
-                                    <th class="sortable" data-sort="shares">Shares <span class="sort-indicator"></span></th>
-                                    <th class="sortable" data-sort="avgCost">Avg Cost <span class="sort-indicator"></span></th>
-                                    <th class="sortable" data-sort="currentPrice">Current Price <span class="sort-indicator"></span></th>
-                                    <th class="sortable" data-sort="totalCost">Total Cost <span class="sort-indicator"></span></th>
-                                    <th class="sortable" data-sort="currentValue">Current Value <span class="sort-indicator"></span></th>
-                                    <th class="sortable" data-sort="gainLoss">Gain/Loss <span class="sort-indicator"></span></th>
-                                    <th class="sortable" data-sort="allocation">Allocation %<span class="sort-indicator"></span></th>
-                                    <th>Actions</th>
+                                    <th>Ticker</th>
+                                    <th class="sortable text-right" data-sort="allocation">Allocation %<span class="sort-indicator"></span></th>
+                                    <th class="sortable text-right" data-sort="pl">P/L<span class="sort-indicator"></span></th>
+                                    <th class="sortable text-right" data-sort="invested">Invested<span class="sort-indicator"></span></th>
+                                    <th class="sortable text-right" data-sort="currentValue">Current Value<span class="sort-indicator"></span></th>
+                                    <th class="sortable text-right" data-sort="shares">Shares<span class="sort-indicator"></span></th>
+                                    <th class="sortable text-right" data-sort="avgCost">Avg Cost<span class="sort-indicator"></span></th>
+                                    <th class="sortable text-right" data-sort="currentPrice">Current Price<span class="sort-indicator"></span></th>
                                 </tr>
                             </thead>
                             <tbody id="holdingsTableBody">
@@ -627,8 +653,8 @@
                     <form id="editForm">
                         <input type="hidden" id="editIndex">
                         <div class="mb-3">
-                            <label for="editSymbol" class="form-label">Symbol</label>
-                            <input type="text" class="form-control" id="editSymbol" readonly>
+                            <label for="editTicker" class="form-label">Ticker</label>
+                            <input type="text" class="form-control" id="editTicker" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="editShares" class="form-label">Shares</label>
@@ -656,68 +682,55 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // ============ Portfolio Data ============
+        const portfolioData = [
+            { ticker: 'AAPL', shares: 50, avgCost: 145.32, currentPrice: 185.45 },
+            { ticker: 'MSFT', shares: 35, avgCost: 320.15, currentPrice: 425.67 },
+            { ticker: 'GOOGL', shares: 20, avgCost: 2450.00, currentPrice: 2865.30 },
+            { ticker: 'AMZN', shares: 25, avgCost: 3210.45, currentPrice: 3580.90 },
+            { ticker: 'NVDA', shares: 40, avgCost: 245.67, currentPrice: 875.32 },
+            { ticker: 'META', shares: 30, avgCost: 285.20, currentPrice: 495.15 },
+            { ticker: 'TSLA', shares: 15, avgCost: 875.45, currentPrice: 245.67 },
+            { ticker: 'BRK.A', shares: 8, avgCost: 520000, currentPrice: 625000 },
+            { ticker: 'JNJ', shares: 45, avgCost: 155.30, currentPrice: 162.45 },
+            { ticker: 'V', shares: 35, avgCost: 250.15, currentPrice: 295.80 },
+            { ticker: 'WMT', shares: 40, avgCost: 145.20, currentPrice: 165.45 },
+            { ticker: 'JPM', shares: 50, avgCost: 185.30, currentPrice: 215.75 },
+            { ticker: 'MA', shares: 25, avgCost: 420.15, currentPrice: 480.90 },
+            { ticker: 'UNH', shares: 20, avgCost: 485.20, currentPrice: 525.60 },
+            { ticker: 'XOM', shares: 60, avgCost: 102.45, currentPrice: 118.75 },
+            { ticker: 'CVX', shares: 35, avgCost: 165.30, currentPrice: 182.10 },
+            { ticker: 'KO', shares: 80, avgCost: 58.20, currentPrice: 62.45 },
+            { ticker: 'PEP', shares: 45, avgCost: 178.90, currentPrice: 195.30 },
+            { ticker: 'MCD', shares: 30, avgCost: 285.45, currentPrice: 295.60 },
+            { ticker: 'CSCO', shares: 100, avgCost: 47.30, currentPrice: 52.80 },
+            { ticker: 'IBM', shares: 40, avgCost: 145.60, currentPrice: 155.20 },
+            { ticker: 'INTC', shares: 70, avgCost: 42.15, currentPrice: 38.90 },
+            { ticker: 'AMD', shares: 50, avgCost: 115.30, currentPrice: 142.75 },
+            { ticker: 'QCOM', shares: 30, avgCost: 165.20, currentPrice: 175.45 },
+            { ticker: 'ADBE', shares: 25, avgCost: 420.15, currentPrice: 495.80 },
+            { ticker: 'CRM', shares: 20, avgCost: 285.60, currentPrice: 315.20 },
+            { ticker: 'ORCL', shares: 35, avgCost: 128.45, currentPrice: 142.30 },
+            { ticker: 'NFLX', shares: 15, avgCost: 385.20, currentPrice: 425.60 },
+            { ticker: 'SHOP', shares: 10, avgCost: 245.30, currentPrice: 265.45 }
+        ];
+
         // ============ Portfolio Application ============
         
         class PortfolioApp {
             constructor() {
-                this.holdings = [];
-                this.trades = [];
-                this.currentSort = { field: 'symbol', direction: 'asc' };
+                this.holdings = [...portfolioData];
+                this.currentSort = { field: 'allocation', direction: 'desc' };
                 this.charts = {};
                 this.init();
             }
 
             init() {
                 this.loadFromStorage();
-                if (this.holdings.length === 0) {
-                    this.loadDefaultPortfolio();
-                }
                 this.setupEventListeners();
                 this.render();
                 this.initCharts();
                 this.setDefaultDates();
-            }
-
-            // ============ Default Portfolio (29 stocks) ============
-            loadDefaultPortfolio() {
-                const defaultHoldings = [
-                    { symbol: 'AAPL', shares: 50, avgCost: 145.32, currentPrice: 185.45 },
-                    { symbol: 'MSFT', shares: 35, avgCost: 320.15, currentPrice: 425.67 },
-                    { symbol: 'GOOGL', shares: 20, avgCost: 2450.00, currentPrice: 2865.30 },
-                    { symbol: 'AMZN', shares: 25, avgCost: 3210.45, currentPrice: 3580.90 },
-                    { symbol: 'NVDA', shares: 40, avgCost: 245.67, currentPrice: 875.32 },
-                    { symbol: 'META', shares: 30, avgCost: 285.20, currentPrice: 495.15 },
-                    { symbol: 'TSLA', shares: 15, avgCost: 875.45, currentPrice: 245.67 },
-                    { symbol: 'BRK.A', shares: 8, avgCost: 520000, currentPrice: 625000 },
-                    { symbol: 'JNJ', shares: 45, avgCost: 155.30, currentPrice: 162.45 },
-                    { symbol: 'V', shares: 35, avgCost: 250.15, currentPrice: 295.80 },
-                    { symbol: 'WMT', shares: 40, avgCost: 145.20, currentPrice: 165.45 },
-                    { symbol: 'JPM', shares: 50, avgCost: 185.30, currentPrice: 215.75 },
-                    { symbol: 'MA', shares: 25, avgCost: 420.15, currentPrice: 480.90 },
-                    { symbol: 'UNH', shares: 20, avgCost: 485.20, currentPrice: 525.60 },
-                    { symbol: 'XOM', shares: 60, avgCost: 102.45, currentPrice: 118.75 },
-                    { symbol: 'CVX', shares: 35, avgCost: 165.30, currentPrice: 182.10 },
-                    { symbol: 'KO', shares: 80, avgCost: 58.20, currentPrice: 62.45 },
-                    { symbol: 'PEP', shares: 45, avgCost: 178.90, currentPrice: 195.30 },
-                    { symbol: 'MCD', shares: 30, avgCost: 285.45, currentPrice: 295.60 },
-                    { symbol: 'CSCO', shares: 100, avgCost: 47.30, currentPrice: 52.80 },
-                    { symbol: 'IBM', shares: 40, avgCost: 145.60, currentPrice: 155.20 },
-                    { symbol: 'INTC', shares: 70, avgCost: 42.15, currentPrice: 38.90 },
-                    { symbol: 'AMD', shares: 50, avgCost: 115.30, currentPrice: 142.75 },
-                    { symbol: 'QCOM', shares: 30, avgCost: 165.20, currentPrice: 175.45 },
-                    { symbol: 'ADBE', shares: 25, avgCost: 420.15, currentPrice: 495.80 },
-                    { symbol: 'CRM', shares: 20, avgCost: 285.60, currentPrice: 315.20 },
-                    { symbol: 'ORCL', shares: 35, avgCost: 128.45, currentPrice: 142.30 },
-                    { symbol: 'NFLX', shares: 15, avgCost: 385.20, currentPrice: 425.60 },
-                    { symbol: 'SHOP', shares: 10, avgCost: 245.30, currentPrice: 265.45 }
-                ];
-
-                this.holdings = defaultHoldings.map(h => ({
-                    ...h,
-                    purchaseDate: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-                }));
-
-                this.saveToStorage();
             }
 
             // ============ Data Persistence ============
@@ -725,121 +738,43 @@
                 const stored = localStorage.getItem('portfolioData');
                 if (stored) {
                     try {
-                        const data = JSON.parse(stored);
-                        this.holdings = data.holdings || [];
-                        this.trades = data.trades || [];
+                        this.holdings = JSON.parse(stored);
                     } catch (e) {
                         console.error('Error loading data:', e);
+                        this.holdings = [...portfolioData];
                     }
                 }
             }
 
             saveToStorage() {
-                localStorage.setItem('portfolioData', JSON.stringify({
-                    holdings: this.holdings,
-                    trades: this.trades
-                }));
-            }
-
-            // ============ Trade Logic ============
-            buyStock(symbol, shares, price, date) {
-                const holding = this.holdings.find(h => h.symbol === symbol.toUpperCase());
-                
-                if (holding) {
-                    const totalCost = holding.shares * holding.avgCost;
-                    const newCost = shares * price;
-                    const totalShares = holding.shares + shares;
-                    holding.avgCost = (totalCost + newCost) / totalShares;
-                    holding.shares = totalShares;
-                    holding.currentPrice = price;
-                } else {
-                    this.holdings.push({
-                        symbol: symbol.toUpperCase(),
-                        shares: shares,
-                        avgCost: price,
-                        currentPrice: price,
-                        purchaseDate: date
-                    });
-                }
-
-                this.trades.push({
-                    type: 'BUY',
-                    symbol: symbol.toUpperCase(),
-                    shares: shares,
-                    price: price,
-                    date: date,
-                    timestamp: new Date().toISOString()
-                });
-
-                this.saveToStorage();
-                this.render();
-                this.showAlert('success', `✓ Bought ${shares} shares of ${symbol.toUpperCase()}`);
-            }
-
-            sellStock(symbol, shares, price, date) {
-                const holding = this.holdings.find(h => h.symbol === symbol.toUpperCase());
-                
-                if (!holding) {
-                    this.showAlert('danger', `✗ No holding found for ${symbol.toUpperCase()}`);
-                    return;
-                }
-
-                if (holding.shares < shares) {
-                    this.showAlert('danger', `✗ Insufficient shares. You have ${holding.shares.toFixed(2)} shares.`);
-                    return;
-                }
-
-                holding.shares -= shares;
-                holding.currentPrice = price;
-
-                if (holding.shares === 0) {
-                    this.holdings = this.holdings.filter(h => h.symbol !== symbol.toUpperCase());
-                }
-
-                this.trades.push({
-                    type: 'SELL',
-                    symbol: symbol.toUpperCase(),
-                    shares: shares,
-                    price: price,
-                    date: date,
-                    timestamp: new Date().toISOString()
-                });
-
-                this.saveToStorage();
-                this.render();
-                this.showAlert('success', `✓ Sold ${shares} shares of ${symbol.toUpperCase()}`);
+                localStorage.setItem('portfolioData', JSON.stringify(this.holdings));
             }
 
             // ============ Calculations ============
-            getTotalValue() {
-                return this.holdings.reduce((sum, h) => sum + (h.shares * h.currentPrice), 0);
-            }
-
-            getTotalCost() {
+            getTotalInvested() {
                 return this.holdings.reduce((sum, h) => sum + (h.shares * h.avgCost), 0);
             }
 
-            getTotalGain() {
-                return this.getTotalValue() - this.getTotalCost();
+            getTotalCurrent() {
+                return this.holdings.reduce((sum, h) => sum + (h.shares * h.currentPrice), 0);
             }
 
-            getReturnPercent() {
-                const cost = this.getTotalCost();
-                return cost === 0 ? 0 : ((this.getTotalGain() / cost) * 100);
+            getTotalUnrealisedPL() {
+                return this.getTotalCurrent() - this.getTotalInvested();
             }
 
-            getAllocation(holding) {
-                const total = this.getTotalValue();
+            getTotalUnrealisedPLPercent() {
+                const invested = this.getTotalInvested();
+                return invested === 0 ? 0 : ((this.getTotalUnrealisedPL() / invested) * 100);
+            }
+
+            calculateAllocation(holding) {
+                const total = this.getTotalCurrent();
                 return total === 0 ? 0 : ((holding.shares * holding.currentPrice) / total) * 100;
             }
 
-            getHoldingGain(holding) {
+            calculatePL(holding) {
                 return (holding.shares * holding.currentPrice) - (holding.shares * holding.avgCost);
-            }
-
-            getHoldingGainPercent(holding) {
-                const cost = holding.shares * holding.avgCost;
-                return cost === 0 ? 0 : ((this.getHoldingGain(holding) / cost) * 100);
             }
 
             // ============ Rendering ============
@@ -847,27 +782,33 @@
                 this.updateSummary();
                 this.updateTable();
                 this.updateCharts();
-                this.updateSelects();
+                this.updateSellSelect();
             }
 
             updateSummary() {
-                const totalValue = this.getTotalValue();
-                const totalCost = this.getTotalCost();
-                const totalGain = this.getTotalGain();
-                const returnPercent = this.getReturnPercent();
+                const invested = this.getTotalInvested();
+                const current = this.getTotalCurrent();
+                const unrealisedPL = this.getTotalUnrealisedPL();
+                const unrealisedPLPercent = this.getTotalUnrealisedPLPercent();
 
-                document.getElementById('totalValue').textContent = this.formatCurrency(totalValue);
+                document.getElementById('investedValue').textContent = this.formatCurrency(invested);
+                document.getElementById('currentValue').textContent = this.formatCurrency(current);
                 
-                const gainElement = document.getElementById('totalGain');
-                gainElement.textContent = `${this.formatCurrency(totalGain)} (${returnPercent.toFixed(2)}%)`;
-                gainElement.className = 'change ' + (totalGain >= 0 ? 'positive' : 'negative');
-
-                document.getElementById('totalInvested').textContent = this.formatCurrency(totalCost);
+                const unrealisedPLElement = document.getElementById('unrealisedPL');
+                unrealisedPLElement.textContent = this.formatCurrency(unrealisedPL);
+                unrealisedPLElement.className = 'value ' + (unrealisedPL >= 0 ? 'positive' : 'negative');
                 
-                const returnElement = document.getElementById('returnPercent');
-                returnElement.textContent = `${returnPercent.toFixed(2)}%`;
-                returnElement.className = 'value ' + (returnPercent >= 0 ? 'positive' : 'negative');
+                document.getElementById('unrealisedPLPercent').textContent = `${unrealisedPLPercent.toFixed(2)}%`;
+                document.getElementById('unrealisedPLPercent').className = 'change ' + (unrealisedPLPercent >= 0 ? 'positive' : 'negative');
                 
+                const netPLElement = document.getElementById('netPL');
+                netPLElement.textContent = this.formatCurrency(unrealisedPL);
+                netPLElement.className = 'value ' + (unrealisedPL >= 0 ? 'positive' : 'negative');
+                
+                document.getElementById('netPLPercent').textContent = `${unrealisedPLPercent.toFixed(2)}%`;
+                document.getElementById('netPLPercent').className = 'change ' + (unrealisedPLPercent >= 0 ? 'positive' : 'negative');
+                
+                document.getElementById('cashValue').textContent = '$0.00';
                 document.getElementById('holdingsCount').textContent = this.holdings.length;
                 document.getElementById('totalHoldings').textContent = this.holdings.length;
             }
@@ -878,33 +819,24 @@
 
                 let filtered = this.holdings;
                 const search = document.getElementById('searchInput').value.toLowerCase();
-                const filterSymbol = document.getElementById('filterSymbol').value;
 
-                filtered = filtered.filter(h => 
-                    h.symbol.toLowerCase().includes(search)
-                );
+                // Filter by ticker
+                filtered = filtered.filter(h => h.ticker.toLowerCase().includes(search));
 
-                if (filterSymbol) {
-                    filtered = filtered.filter(h => h.symbol === filterSymbol);
-                }
+                // Calculate allocation and P/L for each holding
+                filtered = filtered.map(h => ({
+                    ...h,
+                    allocation: this.calculateAllocation(h),
+                    pl: this.calculatePL(h),
+                    invested: h.shares * h.avgCost,
+                    currentValue: h.shares * h.currentPrice
+                }));
 
+                // Sort
                 filtered.sort((a, b) => {
                     const field = this.currentSort.field;
                     let aVal = a[field];
                     let bVal = b[field];
-
-                    if (field === 'gainLoss') {
-                        aVal = this.getHoldingGain(a);
-                        bVal = this.getHoldingGain(b);
-                    } else if (field === 'allocation') {
-                        aVal = this.getAllocation(a);
-                        bVal = this.getAllocation(b);
-                    }
-
-                    if (typeof aVal === 'string') {
-                        aVal = aVal.toLowerCase();
-                        bVal = bVal.toLowerCase();
-                    }
 
                     if (this.currentSort.direction === 'asc') {
                         return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
@@ -914,38 +846,26 @@
                 });
 
                 filtered.forEach((holding, idx) => {
-                    const actualIdx = this.holdings.indexOf(holding);
-                    const totalCost = holding.shares * holding.avgCost;
-                    const currentValue = holding.shares * holding.currentPrice;
-                    const gain = this.getHoldingGain(holding);
-                    const gainPercent = this.getHoldingGainPercent(holding);
-                    const allocation = this.getAllocation(holding);
+                    const actualIdx = this.holdings.findIndex(h => h.ticker === holding.ticker);
+                    const plPercent = holding.invested === 0 ? 0 : ((holding.pl / holding.invested) * 100);
 
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td><strong>${holding.symbol}</strong></td>
-                        <td>${holding.shares.toFixed(2)}</td>
-                        <td>${this.formatCurrency(holding.avgCost)}</td>
-                        <td>${this.formatCurrency(holding.currentPrice)}</td>
-                        <td>${this.formatCurrency(totalCost)}</td>
-                        <td>${this.formatCurrency(currentValue)}</td>
-                        <td><span class="${gain >= 0 ? 'positive' : 'negative'}">${this.formatCurrency(gain)} (${gainPercent.toFixed(2)}%)</span></td>
-                        <td><span class="badge bg-info">${allocation.toFixed(2)}%</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="app.openEditModal(${actualIdx})" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="app.deleteHolding(${actualIdx})" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
+                        <td><strong>${holding.ticker}</strong></td>
+                        <td class="text-right"><span class="badge badge-allocation">${holding.allocation.toFixed(2)}%</span></td>
+                        <td class="text-right"><span class="${holding.pl >= 0 ? 'positive' : 'negative'}">${this.formatCurrency(holding.pl)} (${plPercent.toFixed(2)}%)</span></td>
+                        <td class="text-right">${this.formatCurrency(holding.invested)}</td>
+                        <td class="text-right">${this.formatCurrency(holding.currentValue)}</td>
+                        <td class="text-right">${holding.shares.toFixed(2)}</td>
+                        <td class="text-right">${this.formatCurrency(holding.avgCost)}</td>
+                        <td class="text-right">${this.formatCurrency(holding.currentPrice)}</td>
                     `;
                     tbody.appendChild(row);
                 });
 
                 if (filtered.length === 0) {
                     const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="9" class="text-center text-muted py-4">No holdings found</td>`;
+                    row.innerHTML = `<td colspan="8" class="text-center text-muted py-4">No holdings found</td>`;
                     tbody.appendChild(row);
                 }
             }
@@ -957,9 +877,14 @@
 
             updateAllocationChart() {
                 const ctx = document.getElementById('allocationChart').getContext('2d');
-                const labels = this.holdings.map(h => h.symbol);
-                const values = this.holdings.map(h => h.shares * h.currentPrice);
-                const colors = this.generateColors(this.holdings.length);
+                const holdings = this.holdings.map(h => ({
+                    ...h,
+                    currentValue: h.shares * h.currentPrice
+                }));
+                
+                const labels = holdings.map(h => h.ticker);
+                const values = holdings.map(h => h.currentValue);
+                const colors = this.generateColors(holdings.length);
 
                 if (this.charts.allocation) {
                     this.charts.allocation.destroy();
@@ -985,16 +910,7 @@
                                 labels: {
                                     color: '#e0e0e0',
                                     padding: 15,
-                                    font: { size: 11 },
-                                    generateLabels: (chart) => {
-                                        const data = chart.data;
-                                        return data.labels.map((label, i) => ({
-                                            text: label,
-                                            fillStyle: data.datasets[0].backgroundColor[i],
-                                            hidden: false,
-                                            index: i
-                                        }));
-                                    }
+                                    font: { size: 11 }
                                 }
                             }
                         }
@@ -1004,8 +920,14 @@
 
             updatePerformanceChart() {
                 const ctx = document.getElementById('performanceChart').getContext('2d');
-                const labels = this.holdings.map(h => h.symbol);
-                const gains = this.holdings.map(h => this.getHoldingGainPercent(h));
+                const holdings = this.holdings.map(h => ({
+                    ...h,
+                    pl: (h.shares * h.currentPrice) - (h.shares * h.avgCost),
+                    invested: h.shares * h.avgCost
+                }));
+                
+                const labels = holdings.map(h => h.ticker);
+                const gains = holdings.map(h => h.invested === 0 ? 0 : ((h.pl / h.invested) * 100));
                 const colors = gains.map(g => g >= 0 ? '#198754' : '#dc3545');
 
                 if (this.charts.performance) {
@@ -1047,29 +969,16 @@
                 });
             }
 
-            updateSelects() {
-                const symbols = this.holdings.map(h => h.symbol).sort();
+            updateSellSelect() {
+                const tickers = this.holdings.map(h => h.ticker).sort();
                 
-                // Update filter select
-                const filterSelect = document.getElementById('filterSymbol');
-                const currentFilter = filterSelect.value;
-                filterSelect.innerHTML = '<option value="">All Holdings</option>';
-                symbols.forEach(symbol => {
-                    const option = document.createElement('option');
-                    option.value = symbol;
-                    option.textContent = symbol;
-                    filterSelect.appendChild(option);
-                });
-                filterSelect.value = currentFilter;
-
-                // Update sell select
                 const sellSelect = document.getElementById('sellSymbol');
                 const currentSell = sellSelect.value;
                 sellSelect.innerHTML = '<option value="">Select a stock...</option>';
-                symbols.forEach(symbol => {
+                tickers.forEach(ticker => {
                     const option = document.createElement('option');
-                    option.value = symbol;
-                    option.textContent = symbol;
+                    option.value = ticker;
+                    option.textContent = ticker;
                     sellSelect.appendChild(option);
                 });
                 sellSelect.value = currentSell;
@@ -1085,45 +994,78 @@
                 // Buy form
                 document.getElementById('buyForm').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const symbol = document.getElementById('buySymbol').value;
+                    const ticker = document.getElementById('buySymbol').value.toUpperCase();
                     const shares = parseFloat(document.getElementById('buyShares').value);
                     const price = parseFloat(document.getElementById('buyPrice').value);
-                    const date = document.getElementById('buyDate').value;
 
-                    if (!symbol || !shares || !price || !date) {
+                    if (!ticker || !shares || !price) {
                         this.showAlert('warning', '⚠ Please fill in all fields');
                         return;
                     }
 
-                    this.buyStock(symbol, shares, price, date);
+                    const existing = this.holdings.find(h => h.ticker === ticker);
+                    if (existing) {
+                        const totalCost = existing.shares * existing.avgCost;
+                        const newCost = shares * price;
+                        const totalShares = existing.shares + shares;
+                        existing.avgCost = (totalCost + newCost) / totalShares;
+                        existing.shares = totalShares;
+                        existing.currentPrice = price;
+                    } else {
+                        this.holdings.push({
+                            ticker: ticker,
+                            shares: shares,
+                            avgCost: price,
+                            currentPrice: price
+                        });
+                    }
+
+                    this.saveToStorage();
+                    this.render();
                     e.target.reset();
                     this.setDefaultDates();
+                    this.showAlert('success', `✓ Bought ${shares} shares of ${ticker}`);
                 });
 
                 // Sell form
                 document.getElementById('sellForm').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const symbol = document.getElementById('sellSymbol').value;
+                    const ticker = document.getElementById('sellSymbol').value;
                     const shares = parseFloat(document.getElementById('sellShares').value);
                     const price = parseFloat(document.getElementById('sellPrice').value);
-                    const date = document.getElementById('sellDate').value;
 
-                    if (!symbol || !shares || !price || !date) {
+                    if (!ticker || !shares || !price) {
                         this.showAlert('warning', '⚠ Please fill in all fields');
                         return;
                     }
 
-                    this.sellStock(symbol, shares, price, date);
+                    const holding = this.holdings.find(h => h.ticker === ticker);
+                    if (!holding) {
+                        this.showAlert('danger', `✗ No holding found for ${ticker}`);
+                        return;
+                    }
+
+                    if (holding.shares < shares) {
+                        this.showAlert('danger', `✗ Insufficient shares. You have ${holding.shares.toFixed(2)} shares.`);
+                        return;
+                    }
+
+                    holding.shares -= shares;
+                    holding.currentPrice = price;
+
+                    if (holding.shares === 0) {
+                        this.holdings = this.holdings.filter(h => h.ticker !== ticker);
+                    }
+
+                    this.saveToStorage();
+                    this.render();
                     e.target.reset();
                     this.setDefaultDates();
+                    this.showAlert('success', `✓ Sold ${shares} shares of ${ticker}`);
                 });
 
-                // Search and filter
+                // Search
                 document.getElementById('searchInput').addEventListener('input', () => {
-                    this.updateTable();
-                });
-
-                document.getElementById('filterSymbol').addEventListener('change', () => {
                     this.updateTable();
                 });
 
@@ -1135,33 +1077,11 @@
                             this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
                         } else {
                             this.currentSort.field = field;
-                            this.currentSort.direction = 'asc';
+                            this.currentSort.direction = field === 'allocation' ? 'desc' : 'asc';
                         }
                         this.updateTable();
                         this.updateSortIndicators();
                     });
-                });
-
-                // Edit modal
-                document.getElementById('saveEditBtn').addEventListener('click', () => {
-                    const idx = parseInt(document.getElementById('editIndex').value);
-                    const shares = parseFloat(document.getElementById('editShares').value);
-                    const avgCost = parseFloat(document.getElementById('editAvgCost').value);
-                    const currentPrice = parseFloat(document.getElementById('editCurrentPrice').value);
-
-                    if (!shares || !avgCost || !currentPrice) {
-                        this.showAlert('warning', '⚠ Please fill in all fields');
-                        return;
-                    }
-
-                    this.holdings[idx].shares = shares;
-                    this.holdings[idx].avgCost = avgCost;
-                    this.holdings[idx].currentPrice = currentPrice;
-
-                    this.saveToStorage();
-                    this.render();
-                    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-                    this.showAlert('success', '✓ Holding updated successfully');
                 });
 
                 // Export/Import
@@ -1184,7 +1104,6 @@
                 document.getElementById('clearDataBtn').addEventListener('click', () => {
                     if (confirm('⚠ WARNING: This will delete ALL portfolio data. Continue?')) {
                         this.holdings = [];
-                        this.trades = [];
                         this.saveToStorage();
                         this.render();
                         this.showAlert('danger', '🗑 All data has been cleared');
@@ -1193,7 +1112,8 @@
 
                 document.getElementById('resetBtn').addEventListener('click', () => {
                     if (confirm('Reset to default 29-stock portfolio?')) {
-                        this.loadDefaultPortfolio();
+                        this.holdings = [...portfolioData];
+                        this.saveToStorage();
                         this.render();
                         this.showAlert('success', '✓ Portfolio reset to default');
                     }
@@ -1201,36 +1121,16 @@
             }
 
             // ============ Utilities ============
-            openEditModal(idx) {
-                const holding = this.holdings[idx];
-                document.getElementById('editIndex').value = idx;
-                document.getElementById('editSymbol').value = holding.symbol;
-                document.getElementById('editShares').value = holding.shares;
-                document.getElementById('editAvgCost').value = holding.avgCost;
-                document.getElementById('editCurrentPrice').value = holding.currentPrice;
-
-                new bootstrap.Modal(document.getElementById('editModal')).show();
-            }
-
-            deleteHolding(idx) {
-                if (confirm(`Delete ${this.holdings[idx].symbol} from portfolio?`)) {
-                    this.holdings.splice(idx, 1);
-                    this.saveToStorage();
-                    this.render();
-                    this.showAlert('success', '✓ Holding deleted');
-                }
-            }
-
             exportCSV() {
-                let csv = 'Symbol,Shares,Avg Cost,Current Price,Total Cost,Current Value,Gain/Loss,Allocation %,Purchase Date\n';
+                let csv = 'Ticker,Shares,Avg Cost,Current Price,Invested,Current Value,P/L,Allocation %\n';
                 
                 this.holdings.forEach(h => {
-                    const totalCost = h.shares * h.avgCost;
+                    const invested = h.shares * h.avgCost;
                     const currentValue = h.shares * h.currentPrice;
-                    const gain = currentValue - totalCost;
-                    const allocation = this.getAllocation(h);
+                    const pl = currentValue - invested;
+                    const allocation = this.calculateAllocation(h);
                     
-                    csv += `"${h.symbol}",${h.shares},${h.avgCost},${h.currentPrice},${totalCost},${currentValue},${gain},${allocation},"${h.purchaseDate || ''}"\n`;
+                    csv += `"${h.ticker}",${h.shares},${h.avgCost},${h.currentPrice},${invested},${currentValue},${pl},${allocation}\n`;
                 });
 
                 const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -1261,19 +1161,17 @@
                         for (let i = 1; i < lines.length; i++) {
                             const parts = lines[i].split(',');
                             if (parts.length >= 4) {
-                                const symbol = parts[0].replace(/"/g, '').trim();
+                                const ticker = parts[0].replace(/"/g, '').trim();
                                 const shares = parseFloat(parts[1]);
                                 const avgCost = parseFloat(parts[2]);
                                 const currentPrice = parseFloat(parts[3]);
-                                const purchaseDate = parts[8] ? parts[8].replace(/"/g, '').trim() : new Date().toISOString().split('T')[0];
                                 
-                                if (symbol && !isNaN(shares) && !isNaN(avgCost) && !isNaN(currentPrice)) {
+                                if (ticker && !isNaN(shares) && !isNaN(avgCost) && !isNaN(currentPrice)) {
                                     newHoldings.push({
-                                        symbol: symbol,
+                                        ticker: ticker,
                                         shares: shares,
                                         avgCost: avgCost,
-                                        currentPrice: currentPrice,
-                                        purchaseDate: purchaseDate
+                                        currentPrice: currentPrice
                                     });
                                 }
                             }
