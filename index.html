@@ -317,6 +317,8 @@
             .tab-content {
                 padding: 1rem;
             }
+            /* keep horizontal scroll on small screens */
+            .table-responsive { overflow-x: auto; }
         }
     </style>
 </head>
@@ -493,35 +495,310 @@ placeholder="Search...">
 <div class="table-responsive">
 
 <table class="table table-dark table-hover align-middle">
-
-<thead>
-
-<tr>
-
-<th>Ticker</th>
-
-<th>Allocation</th>
-
-<th>P/L</th>
-
-<th>Shares</th>
-
-<th>Avg Cost</th>
-
-<th>Current Price</th>
-
-<th>Total Cost</th>
-
-<th>Current Value</th>
-
-</tr>
-
-</thead>
-
-<tbody id="portfolioBody">
-
-</tbody>
-
+  <thead style="position: sticky; top: 0; z-index: 2; background-color: var(--card-bg);">
+    <tr>
+      <th>Ticker</th>
+      <th class="text-end">Allocation %</th>
+      <th class="text-end">P/L</th>
+      <th class="text-end">Shares</th>
+      <th class="text-end">Avg Cost</th>
+      <th class="text-end">Current Price</th>
+      <th class="text-end">Invested</th>
+      <th class="text-end">Current Value</th>
+    </tr>
+  </thead>
+  <tbody id="portfolioBody">
+    <tr>
+      <td>MU</td>
+      <td class="text-end text-success">2.07%</td>
+      <td class="text-end text-success">+138.06%</td>
+      <td class="text-end">12.81</td>
+      <td class="text-end">409.80</td>
+      <td class="text-end">975.56</td>
+      <td class="text-end">5,250.66</td>
+      <td class="text-end">12,499.55</td>
+    </tr>
+    <tr>
+      <td>V</td>
+      <td class="text-end text-success">2.05%</td>
+      <td class="text-end text-success">+19.30%</td>
+      <td class="text-end">34.25</td>
+      <td class="text-end">303.54</td>
+      <td class="text-end">362.13</td>
+      <td class="text-end">10,398.31</td>
+      <td class="text-end">12,405.30</td>
+    </tr>
+    <tr>
+      <td>MA</td>
+      <td class="text-end text-success">5.10%</td>
+      <td class="text-end text-success">+8.73%</td>
+      <td class="text-end">57.04</td>
+      <td class="text-end">496.07</td>
+      <td class="text-end">539.39</td>
+      <td class="text-end">28,299.45</td>
+      <td class="text-end">30,770.61</td>
+    </tr>
+    <tr>
+      <td>AXON</td>
+      <td class="text-end text-success">4.72%</td>
+      <td class="text-end text-success">+55.64%</td>
+      <td class="text-end">47.73</td>
+      <td class="text-end">383.60</td>
+      <td class="text-end">597.04</td>
+      <td class="text-end">18,313.39</td>
+      <td class="text-end">28,502.62</td>
+    </tr>
+    <tr>
+      <td>HOOD</td>
+      <td class="text-end text-success">1.39%</td>
+      <td class="text-end text-success">+49.71%</td>
+      <td class="text-end">74.66</td>
+      <td class="text-end">75.30</td>
+      <td class="text-end">112.73</td>
+      <td class="text-end">5,623.07</td>
+      <td class="text-end">8,417.17</td>
+    </tr>
+    <tr>
+      <td>SOFI</td>
+      <td class="text-end text-success">1.16%</td>
+      <td class="text-end text-success">+17.45%</td>
+      <td class="text-end">386.22</td>
+      <td class="text-end">15.53</td>
+      <td class="text-end">18.24</td>
+      <td class="text-end">6,000.00</td>
+      <td class="text-end">7,044.73</td>
+    </tr>
+    <tr>
+      <td>IGV</td>
+      <td class="text-end text-success">4.80%</td>
+      <td class="text-end text-success">+21.49%</td>
+      <td class="text-end">309.50</td>
+      <td class="text-end">77.02</td>
+      <td class="text-end">93.57</td>
+      <td class="text-end">23,838.50</td>
+      <td class="text-end">28,960.73</td>
+    </tr>
+    <tr>
+      <td>NVDA</td>
+      <td class="text-end text-success">6.15%</td>
+      <td class="text-end text-success">+5.83%</td>
+      <td class="text-end">190.59</td>
+      <td class="text-end">184.09</td>
+      <td class="text-end">194.83</td>
+      <td class="text-end">35,088.52</td>
+      <td class="text-end">37,134.38</td>
+    </tr>
+    <tr>
+      <td>UAE</td>
+      <td class="text-end text-success">1.03%</td>
+      <td class="text-end text-success">+4.45%</td>
+      <td class="text-end">329.34</td>
+      <td class="text-end">18.21</td>
+      <td class="text-end">19.02</td>
+      <td class="text-end">6,000.00</td>
+      <td class="text-end">6,264.13</td>
+    </tr>
+    <tr>
+      <td>GOOG</td>
+      <td class="text-end text-success">2.00%</td>
+      <td class="text-end text-success">+20.36%</td>
+      <td class="text-end">34.02</td>
+      <td class="text-end">295.93</td>
+      <td class="text-end">356.18</td>
+      <td class="text-end">10,069.76</td>
+      <td class="text-end">12,119.80</td>
+    </tr>
+    <tr>
+      <td>AMZN</td>
+      <td class="text-end text-success">6.10%</td>
+      <td class="text-end text-success">+4.94%</td>
+      <td class="text-end">151.66</td>
+      <td class="text-end">231.24</td>
+      <td class="text-end">242.67</td>
+      <td class="text-end">35,072.66</td>
+      <td class="text-end">36,804.94</td>
+    </tr>
+    <tr>
+      <td>IAUM</td>
+      <td class="text-end text-danger">2.27%</td>
+      <td class="text-end text-danger">-8.96%</td>
+      <td class="text-end">334.50</td>
+      <td class="text-end">45.10</td>
+      <td class="text-end">41.06</td>
+      <td class="text-end">15,089.52</td>
+      <td class="text-end">13,734.91</td>
+    </tr>
+    <tr>
+      <td>MSFT</td>
+      <td class="text-end text-success">11.45%</td>
+      <td class="text-end text-success">+0.08%</td>
+      <td class="text-end">176.97</td>
+      <td class="text-end">390.17</td>
+      <td class="text-end">390.49</td>
+      <td class="text-end">69,050.86</td>
+      <td class="text-end">69,105.76</td>
+    </tr>
+    <tr>
+      <td>SPGI</td>
+      <td class="text-end text-success">4.18%</td>
+      <td class="text-end text-success">+6.33%</td>
+      <td class="text-end">57.33</td>
+      <td class="text-end">413.70</td>
+      <td class="text-end">439.89</td>
+      <td class="text-end">23,719.07</td>
+      <td class="text-end">25,220.37</td>
+    </tr>
+    <tr>
+      <td>LLY</td>
+      <td class="text-end text-success">2.95%</td>
+      <td class="text-end text-success">+22.58%</td>
+      <td class="text-end">14.66</td>
+      <td class="text-end">990.34</td>
+      <td class="text-end">1,213.91</td>
+      <td class="text-end">14,524.87</td>
+      <td class="text-end">17,803.68</td>
+    </tr>
+    <tr>
+      <td>ISRG</td>
+      <td class="text-end text-danger">1.97%</td>
+      <td class="text-end text-danger">-4.29%</td>
+      <td class="text-end">28.00</td>
+      <td class="text-end">445.12</td>
+      <td class="text-end">426.01</td>
+      <td class="text-end">12,463.47</td>
+      <td class="text-end">11,928.28</td>
+    </tr>
+    <tr>
+      <td>PANW</td>
+      <td class="text-end text-success">3.98%</td>
+      <td class="text-end text-success">+109.15%</td>
+      <td class="text-end">69.00</td>
+      <td class="text-end">166.42</td>
+      <td class="text-end">348.06</td>
+      <td class="text-end">11,483.12</td>
+      <td class="text-end">24,016.14</td>
+    </tr>
+    <tr>
+      <td>NOW</td>
+      <td class="text-end text-success">9.42%</td>
+      <td class="text-end text-success">+13.47%</td>
+      <td class="text-end">534.99</td>
+      <td class="text-end">93.70</td>
+      <td class="text-end">106.32</td>
+      <td class="text-end">50,133.86</td>
+      <td class="text-end">56,880.84</td>
+    </tr>
+    <tr>
+      <td>CRWD</td>
+      <td class="text-end text-danger">0.49%</td>
+      <td class="text-end text-danger">-52.61%</td>
+      <td class="text-end">15.30</td>
+      <td class="text-end">409.33</td>
+      <td class="text-end">193.98</td>
+      <td class="text-end">6,262.88</td>
+      <td class="text-end">2,967.89</td>
+    </tr>
+    <tr>
+      <td>MELI</td>
+      <td class="text-end text-success">4.09%</td>
+      <td class="text-end text-success">+0.52%</td>
+      <td class="text-end">14.00</td>
+      <td class="text-end">1,754.31</td>
+      <td class="text-end">1,763.36</td>
+      <td class="text-end">24,560.38</td>
+      <td class="text-end">24,687.04</td>
+    </tr>
+    <tr>
+      <td>NFLX</td>
+      <td class="text-end text-danger">2.12%</td>
+      <td class="text-end text-danger">-7.96%</td>
+      <td class="text-end">165.00</td>
+      <td class="text-end">84.37</td>
+      <td class="text-end">77.65</td>
+      <td class="text-end">13,921.65</td>
+      <td class="text-end">12,812.25</td>
+    </tr>
+    <tr>
+      <td>VEEV</td>
+      <td class="text-end text-success">4.57%</td>
+      <td class="text-end text-success">+21.49%</td>
+      <td class="text-end">143.33</td>
+      <td class="text-end">158.65</td>
+      <td class="text-end">192.74</td>
+      <td class="text-end">22,740.50</td>
+      <td class="text-end">27,626.06</td>
+    </tr>
+    <tr>
+      <td>IREN</td>
+      <td class="text-end text-danger">0.85%</td>
+      <td class="text-end text-danger">-38.66%</td>
+      <td class="text-end">133.33</td>
+      <td class="text-end">63.29</td>
+      <td class="text-end">38.82</td>
+      <td class="text-end">8,439.59</td>
+      <td class="text-end">5,175.99</td>
+    </tr>
+    <tr>
+      <td>TEM</td>
+      <td class="text-end text-success">0.33%</td>
+      <td class="text-end text-success">+28.73%</td>
+      <td class="text-end">33.33</td>
+      <td class="text-end">46.82</td>
+      <td class="text-end">60.27</td>
+      <td class="text-end">1,560.67</td>
+      <td class="text-end">2,008.99</td>
+    </tr>
+    <tr>
+      <td>AVGO</td>
+      <td class="text-end text-danger">1.31%</td>
+      <td class="text-end text-danger">-10.81%</td>
+      <td class="text-end">22.00</td>
+      <td class="text-end">404.12</td>
+      <td class="text-end">360.45</td>
+      <td class="text-end">8,890.68</td>
+      <td class="text-end">7,929.90</td>
+    </tr>
+    <tr>
+      <td>GOOGL</td>
+      <td class="text-end text-success">1.37%</td>
+      <td class="text-end text-success">+2.56%</td>
+      <td class="text-end">23.00</td>
+      <td class="text-end">350.91</td>
+      <td class="text-end">359.91</td>
+      <td class="text-end">8,071.02</td>
+      <td class="text-end">8,277.93</td>
+    </tr>
+    <tr>
+      <td>PLTR</td>
+      <td class="text-end text-success">1.80%</td>
+      <td class="text-end text-success">+8.26%</td>
+      <td class="text-end">84.00</td>
+      <td class="text-end">119.43</td>
+      <td class="text-end">129.30</td>
+      <td class="text-end">10,032.21</td>
+      <td class="text-end">10,861.20</td>
+    </tr>
+    <tr>
+      <td>NET</td>
+      <td class="text-end text-success">0.60%</td>
+      <td class="text-end text-success">+9.78%</td>
+      <td class="text-end">15.00</td>
+      <td class="text-end">220.82</td>
+      <td class="text-end">242.41</td>
+      <td class="text-end">3,312.30</td>
+      <td class="text-end">3,636.15</td>
+    </tr>
+    <tr>
+      <td>META</td>
+      <td class="text-end text-success">9.55%</td>
+      <td class="text-end text-success">+2.27%</td>
+      <td class="text-end">98.87</td>
+      <td class="text-end">569.96</td>
+      <td class="text-end">582.90</td>
+      <td class="text-end">56,354.33</td>
+      <td class="text-end">57,632.95</td>
+    </tr>
+  </tbody>
 </table>
 
 </div>
